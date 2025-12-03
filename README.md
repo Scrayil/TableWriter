@@ -100,4 +100,4 @@ The package can handle ANSI colour codes within cells. When colour codes are pre
 
 ## Example output with ASCII colours and truncated fields
 
-<img width="994" height="661" alt="image" src="https://github.com/user-attachments/assets/da02df01-2f1b-479e-823a-eb16115867b3" />
+<img width="995" height="660" alt="image" src="https://github.com/user-attachments/assets/de66b6bc-3301-46b6-b976-31f18a1e5e8f" />
