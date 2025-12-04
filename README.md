@@ -1,6 +1,6 @@
 # 📝 TableWriter
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/Scrayil/TableWriter.git.svg)](https://pkg.go.dev/github.com/Scrayil/TableWriter.git)
+[![Go Reference](https://pkg.go.dev/badge/github.com/Scrayil/TableWriter.git.svg)](https://pkg.go.dev/github.com/Scrayil/TableWriter)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **TableWriter** is a Go package that implements the standard `io.Writer` interface to automatically format tab-separated text (`\t`) into properly aligned and stylized tables, designed for console output (CLI).
