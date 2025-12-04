@@ -21,24 +21,24 @@ type Dividers struct {
 	VRight string
 }
 
-// Winsize è la struttura usata dalle chiamate ioctl per ottenere le dimensioni del terminale.
+// Winsize is the structure used for ioctl calls, to obtain the terminal size.
 type Winsize struct {
-	Row    uint16 // Numero di righe
-	Col    uint16 // Numero di colonne (larghezza)
-	Xpixel uint16 // Larghezza in pixel (spesso 0)
-	Ypixel uint16 // Altezza in pixel (spesso 0)
+	Row    uint16 // Rows number
+	Col    uint16 // Columns number (width)
+	Xpixel uint16 // Pixel's width
+	Ypixel uint16 // Pixel's Height
 }
 
-// GetTerminalSize ottiene le dimensioni del terminale associato al file descriptor (fd).
+// GetTerminalSize retrieves the terminal's size associated to the given file descriptor
 func GetTerminalSize(fd uintptr) (cols, rows int, err error) {
 	ws := &Winsize{}
 
-	// TIOCGWINSZ è la costante che dice al kernel di ottenere la dimensione della finestra TTY.
-	// L'uso di syscall.TIOCGWINSZ è specifico per Linux/macOS.
+	// TIOCGWINSZ is the constant that tells the kernel to retrieve the TTY size.
+	// Using the TIOCGWINSZ syscall is tailored to Linux/macOS.
 	ret, _, errno := syscall.Syscall(
 		syscall.SYS_IOCTL,
 		fd,
-		uintptr(syscall.TIOCGWINSZ), // La richiesta specifica
+		uintptr(syscall.TIOCGWINSZ),
 		uintptr(unsafe.Pointer(ws)),
 	)
 
