@@ -66,7 +66,7 @@ You can customise the behaviour and style of the table by passing one or more fl
 |TableWriter.AlignRight|1 << 2|Aligns the contents of each column to the **Right**.|
 |TableWriter.RemoveLeastPad|1 << 3|Removes the minimum padding space (1 byte) used to separate text from neighbouring columns.|
 |TableWriter.PreserveLongFields|1 << 4|**Disables truncation** of long strings. This completely disables padding if the column width exceeds the terminal width, allowing long lines to wrap.|
-|TableWriter.AsciiTable|1 << 5|Uses only **ASCII** separator characters (+, -, |)|
+|TableWriter.AsciiTable|1 << 5|Uses only **ASCII** separator characters (+, -, \|)|
 
 **Note on Alignment**: The `AlignMiddle` and `AlignRight` flags are mutually exclusive. If both are specified, `AlignRight` logically prevails due to the implementation.
 
