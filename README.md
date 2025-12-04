@@ -12,7 +12,7 @@ It uses the writer concept to process the input data buffer, calculate the optim
 To add `TableWriter` to your Go project:
 
 ```bash
-go get github.com/Scrayil/TableWriter.git
+go get github.com/Scrayil/TableWriter
 ```
 
 ## 💡 Basic Usage
@@ -27,7 +27,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Scrayil/TableWriter.git"
+	"github.com/Scrayil/TableWriter"
 )
 
 func main() {
