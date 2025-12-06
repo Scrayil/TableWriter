@@ -29,7 +29,7 @@ type winsize struct {
 	Ypixel uint16 // Pixel's Height
 }
 
-// GetTerminalSize retrieves the terminal's size associated to the given file descriptor
+// getTerminalSize retrieves the terminal's size associated to the given file descriptor
 func getTerminalSize(fd uintptr) (cols, rows int, err error) {
 	ws := &winsize{}
 
