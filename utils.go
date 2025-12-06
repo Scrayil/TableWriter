@@ -1,11 +1,11 @@
-package utils
+package TableWriter
 
 import (
 	"syscall"
 	"unsafe"
 )
 
-type Dividers struct {
+type dividers struct {
 	HLine  string
 	VLine  string
 	TL     string
@@ -22,7 +22,7 @@ type Dividers struct {
 }
 
 // Winsize is the structure used for ioctl calls, to obtain the terminal size.
-type Winsize struct {
+type winsize struct {
 	Row    uint16 // Rows number
 	Col    uint16 // Columns number (width)
 	Xpixel uint16 // Pixel's width
@@ -30,8 +30,8 @@ type Winsize struct {
 }
 
 // GetTerminalSize retrieves the terminal's size associated to the given file descriptor
-func GetTerminalSize(fd uintptr) (cols, rows int, err error) {
-	ws := &Winsize{}
+func getTerminalSize(fd uintptr) (cols, rows int, err error) {
+	ws := &winsize{}
 
 	// TIOCGWINSZ is the constant that tells the kernel to retrieve the TTY size.
 	// Using the TIOCGWINSZ syscall is tailored to Linux/macOS.

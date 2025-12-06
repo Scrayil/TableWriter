@@ -98,6 +98,6 @@ Resets the internal state of the `Writer` (buffer, columns, and rows), removing 
 
 The package can handle ANSI colour codes within cells. When colour codes are present, the package calculates the column width based on **visual length** (ignoring escape codes). If a string is truncated and contains colour codes, the package attempts to preserve the colours and insert orange [...] notation.
 
-## Example output with ASCII colours and truncated fields
+## Example output with ANSI colours and truncated fields
 
 <img width="995" height="660" alt="image" src="https://github.com/user-attachments/assets/de66b6bc-3301-46b6-b976-31f18a1e5e8f" />

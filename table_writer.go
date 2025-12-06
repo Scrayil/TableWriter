@@ -7,8 +7,6 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
-
-	"github.com/Scrayil/TableWriter/utils"
 )
 
 var escapeColorCodesRegex = regexp.MustCompile(`\033\[[0-9;]+m`)
@@ -25,7 +23,7 @@ const (
 	// PreserveLongFields disables the logic used to truncate long strings in the table.
 	// This flag disables padding completely
 	PreserveLongFields
-	// AsciiTable allows using only ASCII dividers.
+	// AsciiTable allows using only ASCII divider.
 	// Useful for environments that do not support utf-8 encodings
 	AsciiTable
 )
@@ -40,9 +38,9 @@ type column struct {
 // and style them according to the specified flags
 type Writer struct {
 	// Configuration
-	output   io.Writer
-	dividers utils.Dividers
-	flags    uint
+	output  io.Writer
+	divider dividers
+	flags   uint
 
 	// State
 	termCols int
@@ -125,7 +123,7 @@ func (w *Writer) Clear() {
 // init initializes the [Writer] by defining its initial configuration and state
 func (w *Writer) init(output io.Writer, flags uint) *Writer {
 	if flags&AsciiTable != 0 {
-		w.dividers = utils.Dividers{
+		w.divider = dividers{
 			HLine:  "-",
 			VLine:  "|",
 			TL:     "+", // Use '+' for corners/junctions
@@ -139,7 +137,7 @@ func (w *Writer) init(output io.Writer, flags uint) *Writer {
 			VRight: "+",
 		}
 	} else {
-		w.dividers = utils.Dividers{
+		w.divider = dividers{
 			HLine:  "─",
 			VLine:  "│",
 			TL:     "┌",
@@ -154,7 +152,7 @@ func (w *Writer) init(output io.Writer, flags uint) *Writer {
 		}
 	}
 
-	w.termCols, _, _ = utils.GetTerminalSize(os.Stdout.Fd())
+	w.termCols, _, _ = getTerminalSize(os.Stdout.Fd())
 	w.output = output
 	w.flags = flags
 	w.Clear()
@@ -166,7 +164,7 @@ func (w *Writer) init(output io.Writer, flags uint) *Writer {
 func (w *Writer) truncateLongField(l int, c int, maxFieldLen int, fields []string, colorlessFields [][]string) {
 	if w.flags&PreserveLongFields == 0 && w.termCols > 0 && c == len(fields)-1 && len(colorlessFields[l][c]) > maxFieldLen {
 		newColorLessStr := colorlessFields[l][c][:maxFieldLen-5] + "[...]"
-		newFieldStr := strings.Replace(fields[c], colorlessFields[l][c], colorlessFields[l][c][:maxFieldLen-5]+utils.ColorOrange+"[...]"+utils.ColorReset, -1)
+		newFieldStr := strings.Replace(fields[c], colorlessFields[l][c], colorlessFields[l][c][:maxFieldLen-5]+colorOrange+"[...]"+colorReset, -1)
 		w.lines[l] = strings.Replace(w.lines[l], fields[c], newFieldStr, -1)
 		colorlessFields[l][c] = newColorLessStr
 	}
@@ -238,41 +236,41 @@ func (w *Writer) getPadding(c int, colorlessField string) (int, []byte, []byte) 
 // updateHLine computes the length of the horizontal divider line and appends new dividers to it based on the currently
 // available space in the terminal
 func (w *Writer) updateHLine(hLine *string, hLineLength int, l int, isLastRow bool, isLastField bool) {
-	// Unicode dividers might consist into multiple bytes, but represent only 1 visual character
+	// Unicode divider might consist into multiple bytes, but represent only 1 visual character
 	// In order to always compute the visual hLine, we must divide its length by the number of bytes used by a divider
 	// This only works because hLine is only made up from the same repeated divider types (all 3 bytes for box lines)
-	availableTermSpace := w.termCols - (len(*hLine) / len(w.dividers.HLine))
 	var xDivider string
 	switch {
 	case l == 0 && !isLastField:
-		xDivider = w.dividers.TUp
+		xDivider = w.divider.TUp
 	case l == 0:
-		xDivider = w.dividers.TR
+		xDivider = w.divider.TR
 	case isLastRow && !isLastField:
-		xDivider = w.dividers.TDown
+		xDivider = w.divider.TDown
 	case isLastRow:
-		xDivider = w.dividers.BR
+		xDivider = w.divider.BR
 	case isLastField:
-		xDivider = w.dividers.VRight
+		xDivider = w.divider.VRight
 	default:
-		xDivider = w.dividers.Cross
+		xDivider = w.divider.Cross
 	}
 
 	// Adding a prefix to the hLine to render the first column's left border
 	if isLastField {
 		if l == 0 {
-			*hLine = w.dividers.TL + *hLine
+			*hLine = w.divider.TL + *hLine
 		} else if isLastRow {
-			*hLine = w.dividers.BL + *hLine
+			*hLine = w.divider.BL + *hLine
 		} else {
-			*hLine = w.dividers.VLeft + *hLine
+			*hLine = w.divider.VLeft + *hLine
 		}
 	}
+	availableTermSpace := w.termCols - (len(*hLine) / len(w.divider.HLine))
 	if availableTermSpace > 0 {
 		if availableTermSpace >= hLineLength {
-			*hLine += strings.Repeat(w.dividers.HLine, hLineLength-1) + xDivider
+			*hLine += strings.Repeat(w.divider.HLine, hLineLength-1) + xDivider
 		} else {
-			*hLine += strings.Repeat(w.dividers.HLine, availableTermSpace-1) + xDivider
+			*hLine += strings.Repeat(w.divider.HLine, availableTermSpace-1) + xDivider
 		}
 	}
 }
@@ -297,9 +295,9 @@ func (w *Writer) createTable(colorlessFields [][]string) []byte {
 			totalPadding, leftPaddingStr, rightPaddingStr := w.getPadding(c, colorlessFields[l][c])
 			// Used to render the first column's left border segments
 			if c == 0 {
-				formattedBuffer = append(append(append(append(append(formattedBuffer, w.dividers.VLine...), leftPaddingStr...), field...), rightPaddingStr...), w.dividers.VLine...)
+				formattedBuffer = append(append(append(append(append(formattedBuffer, w.divider.VLine...), leftPaddingStr...), field...), rightPaddingStr...), w.divider.VLine...)
 			} else {
-				formattedBuffer = append(append(append(append(formattedBuffer, leftPaddingStr...), field...), rightPaddingStr...), w.dividers.VLine...)
+				formattedBuffer = append(append(append(append(formattedBuffer, leftPaddingStr...), field...), rightPaddingStr...), w.divider.VLine...)
 			}
 			hLineLength := len(colorlessFields[l][c]) + totalPadding + 1
 			// Necessary to add a top border to the table header or first row
